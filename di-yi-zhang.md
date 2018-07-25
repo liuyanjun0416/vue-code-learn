@@ -1,4 +1,8 @@
-# 第一章
+---
+description: vue的开始
+---
+
+# 第一节
 
 第一部分首先来分析下vue的目录结构以及整体的一个架构和进行入口的分析
 
@@ -43,5 +47,5 @@
 
 所以进一步分析entry-runtime-with-compiler，里面做了一个事情，再封装了Vue.prototype.$mount的方法，在原来$mount的方法的基础上加了一些提示解析了template/el 并且转换成render方法\( resolve template/el and convert to render function\)，这里的解析就依赖于上面所说的编译器\(compiler\)，将templete转成成render方法去渲染。
 
-
+接下来，我们去core中寻找vue到底是一个什么。
 
