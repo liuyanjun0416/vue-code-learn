@@ -4,7 +4,7 @@ description: VNODE
 
 # 第二节 -- VNODE
 
-vue 中构建了一个虚拟dom系统。每个dom由javascript中的数据去代替真实dom，这个数据就是对应的虚拟dom，每个虚拟dom的虚拟节点就是VNODE。
+vue 中构建了一个虚拟dom系统。每个dom由javascript中的数据去代替真实dom，这个数据就是对应的虚拟dom，每个虚拟dom的虚拟节点就是VNODE。正是因为有Virtual DOM是以Javascript为基础的，这使得跨平台变成变得更加容易，使用者只需要在操作层新增对应平台的api，即可实现各个平台的使用，如现在的Weex或可扩展pixi等3d引擎等。
 
 首先看下VNODE的源码是怎样的：
 
@@ -81,7 +81,7 @@ export default class VNode {
 因此可以简单的将一个dom，如：
 
 ```markup
-<div id="demo">
+<div id="demo" v-show="isShow">
   <p class="text">hello</p>
 </div>
 ```
@@ -89,8 +89,22 @@ export default class VNode {
 转化为vdom:
 
 ```javascript
-new VNode('div',{attrs:{id:'demo'}},
-  new VNode('p',{class:'text'}),undefined,'hello')
+new VNode('div',
+  {
+    attrs:{
+      id:'demo'
+    },
+    directives: [
+      {
+        /* v-show指令 */
+        rawName: 'v-show',
+        expression: 'isShow',
+        name: 'show',
+        value: true
+     }
+   ]
+  },
+  new VNode('p',{staticClass:'text'}),undefined,'hello')
 )
 ```
 
@@ -128,7 +142,9 @@ export interface VNodeData {
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-### 生成一个新的VNode的方法
+接下来对Vnode进行封装对应的操作方法。
+
+#### 生成一个新的VNode的方法
 
 #### createEmptyVNode 创建一个空VNode节点
 
@@ -137,10 +153,9 @@ export interface VNodeData {
 export const createEmptyVNode = () => {
   const node = new VNode()
   node.text = ''
-  node.isComment = true
   return node
 }
 ```
 
-
+\`
 
