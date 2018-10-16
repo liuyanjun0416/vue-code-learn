@@ -144,9 +144,9 @@ export interface VNodeData {
 
 接下来对Vnode进行封装对应的操作方法。
 
-#### 生成一个新的VNode的方法
+* 生成一个新的VNode的方法
 
-#### createEmptyVNode 创建一个空VNode节点
+createEmptyVNode 创建一个空VNode节点
 
 ```javascript
 /*创建一个空VNode节点*/
@@ -157,5 +157,70 @@ export const createEmptyVNode = () => {
 }
 ```
 
-\`
+* 创建一个文本节点
+
+```javascript
+export const createTextNode = () => {
+  return new VNode(undefined,undefined,undefined,String(val))
+}
+```
+
+* 克隆一个VNode节点
+
+```javascript
+function cloneVNode (vnode) {
+  var cloned = new VNode(
+    vnode.tag,
+    vnode.data,
+    vnode.children,
+    vnode.text,
+    vnode.elm,
+    vnode.context,
+    vnode.componentOptions,
+    vnode.asyncFactory
+  );
+  cloned.ns = vnode.ns;
+  cloned.isStatic = vnode.isStatic;
+  cloned.key = vnode.key;
+  cloned.isComment = vnode.isComment;
+  cloned.fnContext = vnode.fnContext;
+  cloned.fnOptions = vnode.fnOptions;
+  cloned.fnScopeId = vnode.fnScopeId;
+  cloned.isCloned = true;
+  return cloned
+}
+```
+
+### 跨平台
+
+上面说到，正是因为使用Virtual DOM的原因，使得vue拥有跨平台的能力，这里跨平台可以是跨到canvas，native等。这里通过一个适配层去适配对应的操作。
+
+```javascript
+export function createElement(tagName,vnode){
+  let elm
+  if(platform === "web"){
+    elm = document.createElement(tagName);
+  }else if(platform === "weex"){
+    elm = nativeFunc.createElement(tagName); //nativeFunc为对应原生交互操作方法
+  }
+  return elm
+}
+
+export function createTextNode(text){
+}
+
+export function insertBefore(node,target,before){}
+
+export function removeChild(node,child){}
+
+export function appendChild(node,child){}
+
+...
+```
+
+因此，在上面的适配层中，我们可以根据不同平台来执行不同的API方法。这样既可实现跨不同平台。
+
+### 总结
+
+Vue通过使用Virtual DOM可以实现跨平台，并且通过Virtual DOM进行Diff比较以及Patch机制来控制View层的变化，这样可以最大的减少对View层的变动，减少DOM操作，减少性能消耗。而VNODE则是Virtual DOM中的一个节点，这一个节点即是DOM节点的简化。
 
